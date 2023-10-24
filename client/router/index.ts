@@ -3,9 +3,12 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
 import HomeView from "../views/HomeView.vue";
+import ProfileView from "@/views/ProfileView.vue"
 import LoginView from "../views/LoginView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import SettingView from "../views/SettingView.vue";
+
+import ChatView from "@/views/ChatView.vue"
 
 const router = createRouter({
   history: createWebHistory(),
@@ -14,6 +17,19 @@ const router = createRouter({
       path: "/",
       name: "Home",
       component: HomeView,
+      meta: { requiresAuth: false },
+      beforeEnter: (to, from) => {
+        const { isLoggedIn } = storeToRefs(useUserStore());
+        if (isLoggedIn.value) {
+          return { name: "Profile" };
+        }
+      }
+    },
+    {
+      path: "/profile",
+      name: "Profile",
+      component: ProfileView,
+      meta: { requiresAuth: true },
     },
     {
       path: "/setting",
@@ -32,6 +48,12 @@ const router = createRouter({
           return { name: "Settings" };
         }
       },
+    },
+    {
+      path: "/chat",
+      name: "Chat",
+      component: ChatView,
+      meta: { requiresAuth: true },
     },
     {
       path: "/:catchAll(.*)",

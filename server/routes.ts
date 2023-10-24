@@ -156,9 +156,10 @@ class Routes {
   }
 
   @Router.get("/profile/:owner")
-  async getProfile(session: WebSessionDoc, owner: ObjectId) {
+  async getProfile(session: WebSessionDoc, owner: string) {
     const viewer = WebSession.getUser(session);
-    return await Profile.getProfile(owner, viewer);
+    const o = (await User.getUserByUsername(owner))._id;
+    return await Profile.getProfile(o, viewer);
   }
 
   @Router.post("/profile/create")
@@ -168,10 +169,10 @@ class Routes {
   }
 
   @Router.patch("/profile/update/:_id")
-  async updateProfile(session: WebSessionDoc, _id: ObjectId, name: string, content: ContentT) {
+  async updateProfile(session: WebSessionDoc, _id: ObjectId, update: Partial<PostDoc>) {
     const user = WebSession.getUser(session);
     await Profile.isCreator(user, _id);
-    return await Profile.updateProfile(_id, name, content);
+    return await Profile.updateProfile(_id, update);
   }
 
   @Router.post("/profile/create_view/")

@@ -48,11 +48,11 @@ export default class ProfileConcept {
         return { msg: "Profile created successfully!"};
     }
 
-    async updateProfile(_id: ObjectId, name: string, content: ContentT) {
+    async updateProfile(_id: ObjectId, update: Partial<ProfileDoc>) {
         // updateProfile is for the original view of the profile
         const existingProfile = await this.profiles.readOne({ _id });
         if (existingProfile) {
-            const update: Partial<ProfileDoc> = { name: name, content: content };
+            // const update: Partial<ProfileDoc> = { name: name, content: content };
             await this.profiles.updateOne({ _id }, update);
             return { msg: "Profile updated successfully!" };
         } else {
