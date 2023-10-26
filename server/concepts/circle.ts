@@ -39,7 +39,8 @@ export default class CircleConcept {
         const circles = await this.getCirclesByUser(user);
         console.log(circles)
         for (const circle of circles) {
-            if (circle.members.includes(friend)) {
+            console.log("here", circle.members, friend);
+            if (circle.members.map(m => m.toString()).includes(friend.toString())) {
                 return circle;
             }
         }
@@ -79,13 +80,15 @@ export default class CircleConcept {
 
     async removeFromCircle(_id: ObjectId, member: ObjectId) {
         const circle = await this.circles.readOne({ _id });
+        const memberString = member.toString();
         if (circle) {
-            let members = circle.members;
-            if (!members.includes(member)) {
-                throw new Error(`Circle ${circle} does not have member ${member}`);
+            let members = circle.members.map(m => m.toString());
+            if (!members.includes(memberString)) {
+                throw new Error(`Circle ${circle} does not have member ${memberString}`);
             }
-            members = members.filter((m) => m !== member)
-            const update: Partial<CircleDoc> = { members: members };
+            members = members.filter((m) => m !== memberString);
+            var ObjectId = require("mongodb").ObjectId;
+            const update: Partial<CircleDoc> = { members: members.map(m => new ObjectId(m)) };
             await this.circles.updateOne( {_id}, update);
             return { msg: "Member removed from circle!" }
         } else {

@@ -203,6 +203,15 @@ class Routes {
     const memberIds = [];
     for (const member of members) {
       memberIds.push((await User.getUserByUsername(member))._id);
+      const memberId = (await User.getUserByUsername(member))._id;
+      memberIds.push(memberId);
+      // remove friend from circle they are in if they are already in a circle
+      const friendCircle = await Circle.findFriend(user, memberId);
+      console.log("SHOULD REMOVE", friendCircle);
+      if (friendCircle !== undefined) {
+        await Circle.removeFromCircle(friendCircle._id, memberId);
+
+      }
     }
     return await Circle.createCircle(user, memberIds, name, actions);
   }
