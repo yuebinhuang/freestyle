@@ -14,17 +14,18 @@ async function toggleView(){
 
 
 <template>
-
-    <SearchFriend/>
     <div>
-        <p></p>
+        <SearchFriend/>
+    </div>
+    <p></p>
+    <div>
         <article v-if= "showFriendList">
             <button @click="toggleView"> View Requests </button>
-            <FriendList @refreshFriends = getFriends()/>
+            <FriendList/>
         </article>
         <article v-else>
             <button @click="toggleView"> View Connections </button>
-            <RequestList @refreshRequests = getRequests() @refreshPending = getPending() @refreshFriends = getFriends()/>
+            <RequestList/>
         </article>
     </div>
 

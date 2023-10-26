@@ -1,14 +1,16 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
 import { fetchy, BodyT } from "../../utils/fetchy";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../../stores/user";
+import { stringifyQuery } from "vue-router";
+import LoginFormVue from "../Login/LoginForm.vue";
 
 const { currentUsername } = storeToRefs(useUserStore());
-// const props = defineProps(["profile"]);
-// const updatedProfile = ref( { name: props.profile.name, content: props.profile.content } );
+const props = defineProps(["owner"]);
+const newProfile = ref(true);
 const loaded = ref(false);
-let toEdit = ref(true);
+let toEdit = ref(false);
 const profile = ref();
 const newName = ref("");
 const newContent = ref();
@@ -29,14 +31,24 @@ async function getProfile(owner: string) {
     profile.value = response;
 }
 
-async function updateProfile(_id: string, update: BodyT) {
+async function changeProfileView(owner: string, name: string) {
+
+}
+
+async function updateProfileView(_id: string, update: BodyT) {
+    console.log("hello", update);
     try {
-        await fetchy(`/api/profile/update/${profile.value._id}`, "PATCH", {body: update});
+        await fetchy(`/api/profile/update/${profile.value._id}`, "PATCH", { body: {update: update }});
     } catch {
         return;
     }
     emit("refreshProfile");
+    // After updating the profile, refresh the profile and toggle the view!
+    await getProfile(currentUsername.value);
+    await toggleView();
 }
+
+
 
 onBeforeMount(async () => {
   await getProfile(currentUsername.value);
@@ -79,4 +91,4 @@ onBeforeMount(async () => {
 
 <style scoped>
 
-</style>
+</style> -->

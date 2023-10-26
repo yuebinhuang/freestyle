@@ -19,9 +19,12 @@ async function sendRequest(to: string) {
 
 <template>
     <form @submit.prevent="sendRequest(user)">
-        <p>Send Friend Request</p>
-        <input type="text" v-model="user" placeholder="username"/>
-        <button type="submit">Send</button>
+        <div>
+            <p>Send Friend Request</p>
+            <input type="text" v-model="user" placeholder="username"/>
+            <button type="submit">Send</button>
+        </div>
+
     </form>
 </template>
 

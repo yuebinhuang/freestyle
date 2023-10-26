@@ -27,9 +27,17 @@ class Routes {
   }
 
   @Router.post("/users")
-  async createUser(session: WebSessionDoc, username: string, password: string) {
+  async createUser(session: WebSessionDoc, username: string, password: string, name: string, content: ContentT) {
     WebSession.isLoggedOut(session);
-    return await User.create(username, password);
+    await User.create(username, password);
+    const user = await User.getUserByUsername(username);
+    try {
+      const profile = await Profile.createProfile(user._id, name, content);
+      return { msg: "User and profile created!" }
+    } catch {
+      await User.delete(user._id);
+      return { msg: "User can not be created!!" }
+    }
   }
 
   @Router.patch("/users")
