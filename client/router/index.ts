@@ -8,7 +8,10 @@ import LoginView from "../views/LoginView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import SettingView from "../views/SettingView.vue";
 
-import ChatView from "@/views/ChatView.vue"
+import ChatView from "@/views/ChatView.vue";
+import CircleView from "@/views/CircleView.vue";
+import CircleActionsView from "@/views/CircleActionsView.vue";
+import NewCircleView from "@/views/NewCircleView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -49,6 +52,25 @@ const router = createRouter({
         }
       },
     },
+    {
+      path: "/circles",
+      name: "Circles",
+      component: CircleView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/circles/create",
+      name: "NewCircle",
+      component: NewCircleView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/circles/:circleId",
+      name: "CircleActions",
+      component: CircleActionsView,
+      meta: { requiresAuth: true },
+    },
+
     {
       path: "/chat",
       name: "Chat",

@@ -1,0 +1,174 @@
+<script setup lang="ts">
+import { ref, onBeforeMount } from "vue";
+import { fetchy, BodyT } from "../../utils/fetchy";
+import FriendPage from "../Friend/Friendpage.vue";
+
+const loaded = ref(false);
+const friends = ref<Array<Record<string, string>>>([]);
+const emit = defineEmits(['refreshCircles']);
+
+const availActions = ["Chat", "ViewPost", "ViewPostComments", "Comment", "ViewFeed", "Recommend"];
+
+const circleName = ref("");
+const members = ref<Array<Record<string, string>>>([]);
+const actions = ref<Array<Record<string, string>>>([]);
+
+
+async function getFriends() {
+    let response;
+    try {
+        response = await fetchy('/api/friends', "GET");
+    } catch (e) {
+        console.log(e);
+        return;
+    }
+    friends.value = response;
+}
+
+async function createCircle(name: string, members: string[], actions: string[]) {
+    console.log("name", name);
+    console.log('memebers', members)
+    console.log('actions', actions)
+    try {
+        return await fetchy(`/api/circle/create`, "POST", {body: {members: members, name: name, actions: actions}});
+    } catch {
+        return;
+    }
+    emit("refreshCircles");
+}
+
+const isMember = (friend: string) => members.value.includes(friend);
+const isAction = (action) => actions.value.includes(action);
+
+const toggleMember = (friend: string) => {
+    if (isMember(friend)) {
+        members.value = members.value.filter((member) => member !== friend);
+    } else {
+        members.value.push(friend);
+    }
+};
+
+const toggleAction = (action) => {
+    if (isAction(action)) {
+        actions.value = actions.value.filter((act) => act !== action);
+    } else {
+        actions.value.push(action);
+    }
+};
+
+onBeforeMount(async () => {
+  await getFriends();
+  console.log(friends);
+  loaded.value = true;
+});
+
+</script>
+
+<template>
+<section v-if="loaded">
+    <div class="circleName">
+        <input type="text" v-model="circleName" placeholder="Enter name for circle" required>
+    </div>
+
+    <div class="container">
+    <div class="half">
+        <div class="section-header">Members: {{ members }}</div>
+        <p v-for="friend in friends" :key="friend._id">
+            {{ friend }}
+            <label class="toggle-switch">
+            <input type="checkbox" @change="toggleMember(friend)" :checked="isMember(friend)">
+            <span class="toggle-slider"></span>
+            </label>
+        </p>
+    </div>
+    <div class="half">
+        <div class="section-header">Actions {{ actions }}</div>
+        <div>
+        <p v-for="action in availActions" :key="action">
+            {{ action }}
+            <label class="toggle-switch">
+            <input type="checkbox" @change="toggleAction(action)" :checked="isAction(action)">
+            <span class="toggle-slider"></span>
+            </label>
+        </p>
+        </div>
+    </div>
+    </div>
+    <RouterLink :to="{ name: 'Circles' }">
+        <button class="bottom-right-button" @click="createCircle(circleName, members, actions)">Create Circle</button>
+    </RouterLink>
+</section>
+</template>
+  
+<style scoped>
+.circleName {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.container {
+display: flex;
+}
+
+.half {
+flex: 1;
+padding: 20px;
+}
+
+.section-header {
+font-size: 20px;
+font-weight: bold;
+margin-bottom: 10px;
+}
+  
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: 0.4s;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: '';
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+
+.bottom-right-button {
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
+}
+
+</style>

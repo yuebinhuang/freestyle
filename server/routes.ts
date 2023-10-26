@@ -1,13 +1,13 @@
-import { ObjectId, W } from "mongodb";
+import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, User, WebSession, Profile, Circle, Chat, Comment, Feed, Recommend} from "./app";
+import { Chat, Circle, Comment, Feed, Friend, Post, Profile, Recommend, User, WebSession } from "./app";
 import { PostDoc, PostOptions } from "./concepts/post";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import Responses from "./responses";
-import { ContentT, ActionT } from "./types";
+import { ActionT, ContentT } from "./types";
 
 class Routes {
   @Router.get("/session")
@@ -198,9 +198,13 @@ class Routes {
   }
 
   @Router.post("/circle/create")
-  async createCircle(session: WebSessionDoc, members: Set<ObjectId>, name: string, actions: Set<ActionT>) {
+  async createCircle(session: WebSessionDoc, members: string[], name: string, actions: string[]) {
     const user = WebSession.getUser(session);
-    return await Circle.createCircle(user, members, name, actions);
+    const memberIds = [];
+    for (const member of members) {
+      memberIds.push((await User.getUserByUsername(member))._id);
+    }
+    return await Circle.createCircle(user, memberIds, name, actions);
   }
 
   @Router.delete("/circle/delete/:_id")
@@ -210,9 +214,52 @@ class Routes {
     return await Circle.deleteCircle(_id);
   }
 
+  @Router.patch("/circle/update/:_id")
+  async editCircle(session: WebSessionDoc, _id: ObjectId, members: string[], name: string, actions: string[]) {
+    console.log('2234234423423')
+    const user = WebSession.getUser(session);
+    await Circle.isCreator(user, _id);
+    const memberIds = [];
+    for (const member of members) {
+      const memberId = (await User.getUserByUsername(member))._id;
+      memberIds.push(memberId);
+      // remove friend from circle they are in if they are already in a circle
+      const friendCircle = await Circle.findFriend(user, memberId);
+      if (friendCircle !== undefined) {
+        await Circle.removeFromCircle(friendCircle._id, memberId);
+      }
+    }
+    return await Circle.editCircle(_id, memberIds, name, actions);
+  }
+
+  @Router.get("/circle/friend/:friend")
+  async getCircleOfFriend(session: WebSessionDoc, friend: string) {
+    const user = WebSession.getUser(session);
+    const friendId = (await User.getUserByUsername(friend))._id;
+    return await Circle.findFriend(user, friendId);
+  }
+
+  @Router.get("/circle/:_id")
+  async getCircle(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    console.log("before check");
+    await Circle.isCreator(user, _id);
+    console.log("after check");
+    const circle = await Circle.getCircle(_id);
+    const memberUsernames: any = [];
+    for (const member of circle.members) {
+      memberUsernames.push((await User.getUserById(member)).username);
+    }
+    console.log(memberUsernames, circle);
+    circle.members = memberUsernames
+    return circle;
+  }
+
   @Router.get("/circles")
   async getCircles(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
+    const a = await Circle.getCirclesByUser(user)
+    console.log(a[a.length - 1].members)
     return await Circle.getCirclesByUser(user);
   }
 
@@ -231,7 +278,7 @@ class Routes {
   }
 
   @Router.patch("/circle/change/:_id")
-  async changeCircleActions(session: WebSessionDoc, _id: ObjectId, actions: Set<ActionT>) {
+  async changeCircleActions(session: WebSessionDoc, _id: ObjectId, actions: Array<ActionT>) {
     const user = WebSession.getUser(session);
     await Circle.isCreator(user, _id);
     return await Circle.changeActions(_id, actions);

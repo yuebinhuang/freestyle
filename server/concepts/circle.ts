@@ -1,20 +1,20 @@
 import { ObjectId } from "mongodb";
 import DocCollection, { BaseDoc } from "../framework/doc";
-import { BadValuesError, NotAllowedError, NotFoundError } from "./errors";
 import { ActionT } from "../types";
+import { NotAllowedError, NotFoundError } from "./errors";
 
 export interface CircleDoc extends BaseDoc {
     creator: ObjectId;
-    members: Set<ObjectId>;
+    members: Array<ObjectId>;
     name: string;
-    actions: Set<ActionT>;
+    actions: Array<string>;
 }
 
 export default class CircleConcept {
 
     public readonly circles = new DocCollection<CircleDoc>("circles");
 
-    async createCircle(creator: ObjectId, members: Set<ObjectId>, name: string, actions: Set<ActionT>) {
+    async createCircle(creator: ObjectId, members: Array<ObjectId>, name: string, actions: Array<string>) {
         const _id = await this.circles.createOne({ creator: creator, members: members, name: name, actions: actions });
         return { msg: "Circle successfully created!", post: await this.circles.readOne({ _id }) };
     }
@@ -24,10 +24,22 @@ export default class CircleConcept {
         return { msg: "Post deleted successfully!" };
     }
 
+    async editCircle(_id: ObjectId, members: Array<ObjectId>, name: string, actions: Array<string>) {
+        const circle = await this.circles.readOne({ _id });
+        if (circle) {
+            const update: Partial<CircleDoc> = { members: members, name: name, actions: actions };
+            await this.circles.updateOne({_id}, update);
+            return { msg: "Circle updated successfully!" };
+        } else {
+            throw new NotFoundError(`Circle ${_id} not found!`);
+        }
+    }
+
     async findFriend(user: ObjectId, friend: ObjectId) {
         const circles = await this.getCirclesByUser(user);
+        console.log(circles)
         for (const circle of circles) {
-            if (circle.members.has(friend)) {
+            if (circle.members.includes(friend)) {
                 return circle;
             }
         }
@@ -37,7 +49,7 @@ export default class CircleConcept {
     async hasAction(user: ObjectId, friend: ObjectId, action: ActionT) {
         const circle = await this.findFriend(user, friend);
         if (circle !== undefined) {
-            if (circle.actions.has(action)) {
+            if (circle.actions.includes(action)) {
                 return true;
             }
         }
@@ -48,7 +60,7 @@ export default class CircleConcept {
         const circle = await this.circles.readOne({ _id });
         if (circle) {
             const members = circle.members;
-            if (members.has(member)) {
+            if (members.includes(member)) {
                 throw new Error(`Circle ${circle} already has member ${member}`);
             } 
             // if member in another circle, remove it from that circle
@@ -56,7 +68,7 @@ export default class CircleConcept {
             if (currentCircle !== undefined) {
                 this.removeFromCircle(currentCircle._id, member)
             }
-            members.add(member);
+            members.push(member);
             const update: Partial<CircleDoc> = { members: members };
             await this.circles.updateOne( {_id}, update);
             return { msg: "Member added to circle!" };
@@ -68,11 +80,11 @@ export default class CircleConcept {
     async removeFromCircle(_id: ObjectId, member: ObjectId) {
         const circle = await this.circles.readOne({ _id });
         if (circle) {
-            const members = circle.members;
-            if (!members.has(member)) {
+            let members = circle.members;
+            if (!members.includes(member)) {
                 throw new Error(`Circle ${circle} does not have member ${member}`);
             }
-            members.delete(member)
+            members = members.filter((m) => m !== member)
             const update: Partial<CircleDoc> = { members: members };
             await this.circles.updateOne( {_id}, update);
             return { msg: "Member removed from circle!" }
@@ -81,19 +93,20 @@ export default class CircleConcept {
         }
     }
 
-    async changeActions(_id: ObjectId, actions: Set<ActionT>) {
+    async changeActions(_id: ObjectId, actions: Array<ActionT>) {
         const circle = await this.circles.readOne({ _id });
         if (circle) {
             const update: Partial<CircleDoc> = { actions: actions };
             await this.circles.updateOne({_id}, update);
             return { msg: "Circle actions updated successfully!" };
         } else {
-            throw new NotFoundError(`Circle ${_id} not found!`)
+            throw new NotFoundError(`Circle ${_id} not found!`);
         }
     }
 
     async getCircle(_id: ObjectId) {
         const circle = await this.circles.readOne( {_id} );
+        
         if (circle === null) {
             throw new NotFoundError(`Circle not found!`);
         }
@@ -110,7 +123,8 @@ export default class CircleConcept {
         if (!circle) {
           throw new NotFoundError(`Circle ${_id} does not exist!`);
         }
-        if (circle.creator.toString() ! == user.toString()) {
+        if (circle.creator.toString() !== user.toString()) {
+            console.log(circle.creator.toString(), user.toString());
           throw new NotAllowedError("not creator of circle");
         }
     }
