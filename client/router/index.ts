@@ -13,6 +13,7 @@ import SpecificChatView from "@/views/SpecificChatView.vue"
 import CircleView from "@/views/CircleView.vue";
 import CircleActionsView from "@/views/CircleActionsView.vue";
 import NewCircleView from "@/views/NewCircleView.vue";
+import FeedView from "../views/FeedView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -82,6 +83,12 @@ const router = createRouter({
       path: "/chat/:chatId",
       name: "SpecificChat",
       component: SpecificChatView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/feed",
+      name: "Feed",
+      component: FeedView,
       meta: { requiresAuth: true },
     },
     {
