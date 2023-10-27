@@ -9,6 +9,7 @@ import NotFoundView from "../views/NotFoundView.vue";
 import SettingView from "../views/SettingView.vue";
 
 import ChatView from "@/views/ChatView.vue";
+import SpecificChatView from "@/views/SpecificChatView.vue"
 import CircleView from "@/views/CircleView.vue";
 import CircleActionsView from "@/views/CircleActionsView.vue";
 import NewCircleView from "@/views/NewCircleView.vue";
@@ -75,6 +76,12 @@ const router = createRouter({
       path: "/chat",
       name: "Chat",
       component: ChatView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/chat/:chatId",
+      name: "SpecificChat",
+      component: SpecificChatView,
       meta: { requiresAuth: true },
     },
     {

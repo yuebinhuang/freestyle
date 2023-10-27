@@ -293,26 +293,45 @@ class Routes {
     return await Circle.changeActions(_id, actions);
   }
 
-  @Router.get("/chat/:receiver")
-  async getChat(session: WebSessionDoc, receiver: ObjectId) {
+  @Router.get("/chats")
+  async getChats(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
-    return await Chat.getChat(user, receiver);
+    const chats = await Chat.getChats(user);
+    const newChats = [];
+    for (const chat of chats) {
+      const name1:any = (await User.getUserById(chat.user1)).username
+      const name2:any = (await User.getUserById(chat.user2)).username
+      chat.user1 = name1;
+      chat.user2 = name2;
+      newChats.push(chat);
+    }
+    return newChats;
+  }
+
+  @Router.get("/chat/:_id")
+  async getChat(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    const chatContent = await Chat.getChat(_id)
+    console.log(chatContent)
+    return chatContent;
   }
 
   @Router.post("/chat/create")
-  async createChat(session: WebSessionDoc, receiver: ObjectId, content: ContentT) {
+  async createChat(session: WebSessionDoc, receiver: string, content: ContentT) {
     const user = WebSession.getUser(session);
-    await Circle.hasAction(user, receiver, "Chat");
-    await Circle.hasAction(receiver, user, "Chat");
-    return await Chat.createChat(user, receiver, content);
+    const receiverId = (await User.getUserByUsername(receiver))._id;
+    await Circle.hasAction(user, receiverId, "Chat");
+    await Circle.hasAction(receiverId, user, "Chat");
+    return await Chat.createChat(user, receiverId, content);
   }
 
   @Router.patch("/chat/send/:receiver")
   async sendMessage(session: WebSessionDoc, receiver: ObjectId, content: ContentT) {
     const user = WebSession.getUser(session);
-    await Circle.hasAction(user, receiver, "Chat");
-    await Circle.hasAction(receiver, user, "Chat");
-    return await Chat.sendMessage(user, receiver, content);
+    console.log("there")
+    console.log(1, await Circle.hasAction(user, receiver, "Chat"));
+    console.log(3, await Circle.hasAction(new ObjectId(receiver), user, "Chat"));
+    return await Chat.sendMessage(user, new ObjectId(receiver), content);
   }
 
   @Router.get("/comments/:post")

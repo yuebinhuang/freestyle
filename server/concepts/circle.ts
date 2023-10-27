@@ -36,8 +36,9 @@ export default class CircleConcept {
     }
 
     async findFriend(user: ObjectId, friend: ObjectId) {
+        console.log('user', user)
         const circles = await this.getCirclesByUser(user);
-        console.log(circles)
+        console.log("circels", circles)
         for (const circle of circles) {
             console.log("here", circle.members, friend);
             if (circle.members.map(m => m.toString()).includes(friend.toString())) {
@@ -49,7 +50,9 @@ export default class CircleConcept {
 
     async hasAction(user: ObjectId, friend: ObjectId, action: ActionT) {
         const circle = await this.findFriend(user, friend);
+        console.log("a", circle)
         if (circle !== undefined) {
+            console.log("b")
             if (circle.actions.includes(action)) {
                 return true;
             }

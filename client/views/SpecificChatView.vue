@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ChatList from "@/components/Chat/ChatList.vue";
+import ChatComponent from "@/components/Chat/ChatComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 
@@ -8,7 +8,6 @@ const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
 
 <template>
   <main>
-    <h1>Chat Page</h1>
-    <ChatList/>
+    <ChatComponent :chatId="$route.params.chatId"/>
   </main>
 </template>

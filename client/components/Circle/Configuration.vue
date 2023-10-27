@@ -1,23 +1,4 @@
 
-import { fetchy } from '../../utils/fetchy';
-
-import LoginFormVue from '../Login/LoginForm.vue';
-
-import { response } from 'express';
-
-import LoginFormVue from '../Login/LoginForm.vue';
-
-import LoginFormVue from '../Login/LoginForm.vue';
-
-import { mergeProps } from 'vue';
-
-import { response } from 'express';
-
-import { response } from 'express';
-
-import { response } from 'express';
-
-import { response } from 'express';
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
 import { fetchy, BodyT } from "../../utils/fetchy";
@@ -41,7 +22,6 @@ const actions = ref<Array<Record<string, string>>>([]);
 async function getCircle() {
     let response;
     try {
-        console.log(12313131)
         response = await fetchy(`/api/circle/${circleId}`, "GET");
         console.log(response)
 
