@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
 import { fetchy, BodyT } from "../../utils/fetchy";
-import FriendPage from "../Friend/Friendpage.vue";
 
 const loaded = ref(false);
-const friends = ref<Array<Record<string, string>>>([]);
+const friends = ref<Array<string>>([]);
 const emit = defineEmits(['refreshCircles']);
 
 const availActions = ["Chat", "ViewPost", "ViewPostComments", "Comment", "ViewFeed", "Recommend"];
 
 const circleName = ref("");
-const members = ref<Array<Record<string, string>>>([]);
-const actions = ref<Array<Record<string, string>>>([]);
+const members = ref<Array<string>>([]);
+const actions = ref<Array<string>>([]);
 
 
 async function getFriends() {
@@ -38,7 +37,7 @@ async function createCircle(name: string, members: string[], actions: string[]) 
 }
 
 const isMember = (friend: string) => members.value.includes(friend);
-const isAction = (action) => actions.value.includes(action);
+const isAction = (action: string) => actions.value.includes(action);
 
 const toggleMember = (friend: string) => {
     if (isMember(friend)) {
@@ -48,7 +47,7 @@ const toggleMember = (friend: string) => {
     }
 };
 
-const toggleAction = (action) => {
+const toggleAction = (action: string) => {
     if (isAction(action)) {
         actions.value = actions.value.filter((act) => act !== action);
     } else {
@@ -73,7 +72,7 @@ onBeforeMount(async () => {
     <div class="container">
     <div class="half">
         <div class="section-header">Members: {{ members }}</div>
-        <p v-for="friend in friends" :key="friend._id">
+        <p v-for="friend in friends" :key="friend">
             {{ friend }}
             <label class="toggle-switch">
             <input type="checkbox" @change="toggleMember(friend)" :checked="isMember(friend)">

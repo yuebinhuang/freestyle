@@ -2,10 +2,9 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from "vue";
 import { fetchy, BodyT } from "../../utils/fetchy";
-import FriendPage from "../Friend/Friendpage.vue";
 
 const loaded = ref(false);
-const friends = ref<Array<Record<string, string>>>([]);
+const friends = ref<Array<string>>([]);
 const emit = defineEmits(['refreshCircles']);
 const props = defineProps(['circleId']);
 
@@ -16,8 +15,8 @@ const circle = ref();
 const circleOfFriend = ref();
 
 const newName = ref("");
-const members = ref<Array<Record<string, string>>>([]);
-const actions = ref<Array<Record<string, string>>>([]);
+const members = ref<Array<string>>([]);
+const actions = ref<Array<string>>([]);
 
 async function getCircle() {
     let response;
@@ -70,7 +69,7 @@ async function editCircle(name: string, members: string[], actions: string[]) {
 }
 
 const isMember = (friend: string) => members.value.includes(friend);
-const isAction = (action) => actions.value.includes(action);
+const isAction = (action: string) => actions.value.includes(action);
 
 const toggleMember = (friend: string) => {
     console.log(friend)
@@ -82,7 +81,7 @@ const toggleMember = (friend: string) => {
     }
 };
 
-const toggleAction = (action) => {
+const toggleAction = (action: string) => {
     if (isAction(action)) {
         actions.value = actions.value.filter((act) => act !== action);
     } else {
@@ -110,7 +109,7 @@ onBeforeMount(async () => {
     <div class="half">
         <div class="section-header">Members: {{ members }}</div>
 
-        <p v-for="friend in friends" :key="friend._id">
+        <p v-for="friend in friends" :key="friend">
             {{ friend }}
             <label class="toggle-switch">
             <input type="checkbox" @change="toggleMember(friend)" :checked="isMember(friend)">
@@ -132,7 +131,7 @@ onBeforeMount(async () => {
     </div>
     </div>
     <RouterLink :to="{ name: 'Circles' }">
-        <button class="bottom-left-button" @click="deleteCircle(circleId)">Delete Circle</button>
+        <button class="bottom-left-button" @click="deleteCircle()">Delete Circle</button>
     </RouterLink>
     <RouterLink :to="{ name: 'Circles' }">
         <button class="bottom-right-button" @click="editCircle(newName, members, actions)">Update Circle</button>
@@ -214,7 +213,7 @@ margin-bottom: 10px;
 .bottom-left-button {
   position: absolute;
   bottom: 50px;
-  left: 50px;
+  left: 350px;
 }
 
 </style>
