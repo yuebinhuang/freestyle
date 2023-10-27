@@ -22,87 +22,128 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <header>
-    <nav>
-      
+  <div class="container">
+    <aside class="sidebar">
       <div class="title">
-        <img src="@/assets/images/logo.svg" />
+        <img src="@/assets/images/wave.png" width="100" />
         <RouterLink :to="{ name: 'Home' }">
           <h1>FreeStyle</h1>
         </RouterLink>
       </div>
-      <ul>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Feed' }" :class="{ underline: currentRouteName == 'Feed' }"> Feed </RouterLink>
-        </li>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Profile' }" :class="{ underline: currentRouteName == 'Profile' }"> Connections </RouterLink>
-        </li>
-        <li v-else>
-          <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink>
-        </li>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Circles' }" :class="{ underline: currentRouteName == 'Circles' }"> Circles </RouterLink>
-        </li>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Chat' }" :class="{ underline: currentRouteName == 'Chat' }"> Chat </RouterLink>
-        </li>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
-        </li>
-        <li v-else>
-          <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
-        </li>
-      </ul>
-    </nav>
-    <article v-if="toast !== null" class="toast" :class="toast.style">
-      <p>{{ toast.message }}</p>
-    </article>
-  </header>
-  <RouterView />
+      <nav>
+        <ul>
+          <li v-if="isLoggedIn">
+            <RouterLink :to="{ name: 'Feed' }" :class="{ underline: currentRouteName == 'Feed' }"> Feed </RouterLink>
+          </li>
+          <li v-if="isLoggedIn">
+            <RouterLink :to="{ name: 'Profile' }" :class="{ underline: currentRouteName == 'Profile' }"> Connections </RouterLink>
+          </li>
+          <li v-else>
+            <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink>
+          </li>
+          <li v-if="isLoggedIn">
+            <RouterLink :to="{ name: 'Circles' }" :class="{ underline: currentRouteName == 'Circles' }"> Circles </RouterLink>
+          </li>
+          <li v-if="isLoggedIn">
+            <RouterLink :to="{ name: 'Chat' }" :class="{ underline: currentRouteName == 'Chat' }"> Chat </RouterLink>
+          </li>
+          <li v-if="isLoggedIn">
+            <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
+          </li>
+          <li v-else>
+            <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="content">
+      <header>
+        <article v-if="toast !== null" class="toast" :class="toast.style">
+          <p>{{ toast.message }}</p>
+        </article>
+        <RouterView />
+      </header>
+    </main>
+  </div>
 </template>
 
 <style scoped>
-@import "./assets/toast.css";
-
-nav {
-  padding: 1em 2em;
-  background-color: lightgray;
+.container {
   display: flex;
-  align-items: center;
 }
 
-h1 {
-  font-size: 2em;
-  margin: 0;
+.sidebar {
+  width: 250px; /* Adjust the sidebar width as needed */
+  background-color: #3a8cde; /* Sidebar background color */
+  color: #f2f2f2; /* Text color */
+  padding: 20px;
+  height: 100vh; /* Set sidebar height to 100% of viewport height */
+  overflow-y: auto; /* Add vertical scrollbar if content overflows */
+}
+
+.sidebar a {
+  color: #fff; /* Set the default text color to white */
+  font-size: 20px;
+}
+
+/* Active link styles */
+.sidebar a:active,
+.sidebar a.active {
+  color: #000; /* Set the text color to black when the link is clicked (active) */
 }
 
 .title {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-img {
-  height: 2em;
+.sidebar h1 {
+  font-size: 1.5rem;
 }
 
-a {
-  font-size: large;
-  color: black;
-  text-decoration: none;
+.sidebar ul {
+  list-style: none;
+  padding: 0;
 }
 
-ul {
-  list-style-type: none;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  gap: 1em;
+.sidebar li {
+  margin-bottom: 10px;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
 }
 
 .underline {
   text-decoration: underline;
+}
+
+.toast {
+  background-color: #4733ff; /* Toast background color */
+  color: #d8dde8; /* Text color */
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Media query to adjust the layout for smaller screens */
+@media (max-width: 767px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .content {
+    padding: 20px;
+  }
+}
+</style>
+
+<style>
+body {
+  font-family: "Calibri", sans-serif;
 }
 </style>

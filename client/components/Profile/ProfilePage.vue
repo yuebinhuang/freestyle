@@ -92,5 +92,6 @@ onBeforeMount(async () => {
   border: 2px solid #ccc; /* Add a border */
   padding: 10px; /* Add padding for spacing inside the box */
   margin: 10px 0; /* Add margin for spacing around the box */
+  height: 200px; /* Set a specific height, adjust as needed */
 }
 </style>

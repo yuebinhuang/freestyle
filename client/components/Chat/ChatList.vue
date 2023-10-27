@@ -24,7 +24,7 @@ async function getChats() {
     chats.value = response;
 }
 
-const goToChat = (chat) => {
+const goToChat = (chat:any) => {
       // Use Vue Router to navigate to 'CircleActions' page with the circle's data as a route parameter
       router.push({ name: 'SpecificChat', params: { chatId: chat._id } });
     };
@@ -39,12 +39,26 @@ onBeforeMount(async () => {
 
 <template>
     <CreateChat @refreshChats="getChats()"/>
-    <button v-for="chat in chats" :key="chat._id" @click="goToChat(chat)">
+    <button v-for="chat in chats" :key="chat._id" @click="goToChat(chat)" class="bar">
         <p v-if="currentUsername === chat.user1"> {{ chat.user2 }} </p>
         <p v-else> {{ chat.user1 }} </p>
     </button>
 </template>
 
-<!-- <button v-for="circle in circles" :key="circle._id" @click="goToCircleActions(circle)">
-    {{ circle.name }};
-</button> -->
+<style scoped>
+.bar {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #f0f0f0; /* Background color for the chat bar */
+  border: 1px solid #ddd; /* Border style for the chat bar */
+  border-radius: 5px; /* Rounded corners for the chat bar */
+  margin-bottom: 10px; /* Spacing between chat bars */
+  text-align: left;
+  cursor: pointer;
+}
+
+.bar:hover {
+  background-color: #ddd; /* Background color when hovering over the chat bar */
+}
+</style>

@@ -22,17 +22,25 @@ const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
 
 <style>
 .profile-layout {
-  display: flex; /* Use flexbox for layout */
-  width: 100%; /* Full width of the viewport */
-  justify-content: space-between; /* Center the columns */
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  min-height: 100vh; /* Set the minimum height to 100% of viewport height */
+  background-color: #f0f0f0; /* Light gray background color */
 }
 
 .profile-column,
 .friend-column {
-  flex: 1; /* Both columns take up an equal amount of space */
-  padding: 20px; /* Add padding for spacing */
-  border: 1px solid #ccc; /* Optional: Add borders for separation */
-  background-color: #f0f0f0; /* Optional: Set background color */
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #ccc;
+  background-color: #f5f5ff; /* Light blue background color */
 }
 
+/* Optional: Add some spacing and styling for the h1 element */
+.profile-column h1 {
+  margin-bottom: 20px;
+  color: #333; /* Dark text color */
+}
 </style>
+
