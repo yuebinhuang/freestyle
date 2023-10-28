@@ -2,8 +2,16 @@
 import PostListComponent from "@/components/Post/PostListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import { onBeforeMount } from "vue";
+import router from "../router";
 
-const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
+const userStore = useUserStore();
+const { isLoggedIn, currentUsername } = storeToRefs(userStore);
+
+// onBeforeMount(async () => {
+//   void router.push({name: "Profile"});
+// });
+
 </script>
 
 <template>

@@ -23,12 +23,6 @@ const router = createRouter({
       name: "Home",
       component: HomeView,
       meta: { requiresAuth: false },
-      beforeEnter: (to, from) => {
-        const { isLoggedIn } = storeToRefs(useUserStore());
-        if (isLoggedIn.value) {
-          return { name: "Profile" };
-        }
-      }
     },
     {
       path: "/profile",
